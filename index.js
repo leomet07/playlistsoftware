@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const apiRouter = require("./api").router;
+
+app.use(express.json());
 app.use("/api", apiRouter);
 
 app.use(express.static("public"));
