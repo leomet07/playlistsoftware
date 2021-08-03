@@ -1,9 +1,8 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
-
-app.get("/api", (req, res) => {
-	res.send("Playlist converter api");
-});
+const apiRouter = require("./api").router;
+app.use("/api", apiRouter);
 
 app.use(express.static("public"));
 
