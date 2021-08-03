@@ -67,6 +67,8 @@ async function getSongs(playlistID) {
 
 	console.log("Songs scraped: ", items.length);
 
+	let songs = [];
+
 	for (let item of items) {
 		try {
 			const $ = cheerio.load(item);
@@ -80,14 +82,19 @@ async function getSongs(playlistID) {
 				console.log("unplayable song:", name);
 			} else {
 				console.log("valid song:", name);
+				songs.push(name);
 			}
 		} catch (e) {
 			console.log("Error parsing", e);
 		}
 	}
+
+	return songs;
 }
 
 // like python's if __name__ == "__main__":
 if (require.main === module) {
 	getSongs(process.env.playlistID);
 }
+
+module.exports = { getSongs };

@@ -3,10 +3,11 @@ window.onload = async () => {
 	console.log("Window loaded", currentlocation);
 	if (currentlocation.hash) {
 		const hash = currentlocation.hash.slice(1);
-		console.log("We have a hash", hash);
+
 		const args = new URLSearchParams(hash);
 
 		let access_token = args.get("access_token");
+		console.log("We have an access token: ", access_token);
 	}
 };
 
