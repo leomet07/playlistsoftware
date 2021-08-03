@@ -17,6 +17,6 @@ document
 		console.log("Login with spotify");
 
 		const url =
-			"https://accounts.spotify.com/authorize?client_id=3bf1f10449fb41198b83a7809159c608&redirect_uri=http://localhost:3000/&response_type=token";
+			"https://accounts.spotify.com/authorize?client_id=3bf1f10449fb41198b83a7809159c608&redirect_uri=http://localhost:3000/&response_type=token&scopes=user-read-email%20user-read-email";
 		window.location.replace(url);
 	});
