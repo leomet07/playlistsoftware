@@ -7,7 +7,7 @@ app.get("/api", (req, res) => {
 
 app.use(express.static("public"));
 
-const PORT = 6942 || process.env.PORT;
+const PORT = 3000 || process.env.PORT;
 app.listen(PORT, () => {
 	console.log(`Server listening on port: ${PORT}`);
 });
