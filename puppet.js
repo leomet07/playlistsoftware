@@ -112,7 +112,7 @@ async function searchSong(songName, auth_token) {
 	let rjson = await request.json();
 
 	if (rjson.error) {
-		console.log("Erorr", rjson.status + rjson.error.message);
+		console.log("Erorr", rjson.error.status, rjson.error.message);
 		return null;
 	}
 
@@ -120,7 +120,7 @@ async function searchSong(songName, auth_token) {
 		// console.log(rjson.tracks.items[0].name);
 		return rjson.tracks.items[0];
 	} else {
-		console.log("None found", songName, noCred);
+		console.log("None spotify alternatives found: ", songName, noCred);
 
 		return null;
 	}
