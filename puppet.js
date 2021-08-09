@@ -82,7 +82,7 @@ async function getSongs(playlistID) {
 			if (html.includes('unplayable_=""')) {
 				console.log("unplayable song:", name);
 			} else {
-				console.log("valid song:", name);
+				// console.log("valid song:", name);
 				songs.push(name);
 			}
 		} catch (e) {
@@ -94,33 +94,42 @@ async function getSongs(playlistID) {
 }
 
 async function searchSong(songName, auth_token) {
-	let request = await fetch(
-		"https://api.spotify.com/v1/search?q=" + songName + "&type=track",
-		{
-			method: "GET",
-			headers: {
-				Accept: "application/json",
-				"Content-Type": "application/json",
-				Authorization: "Bearer " + auth_token,
-			},
-		}
-	);
+	const url =
+		"https://api.spotify.com/v1/search?q=" +
+		encodeURI(songName) +
+		"&type=track";
+	let request = await fetch(url, {
+		method: "GET",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+			Authorization: "Bearer " + auth_token,
+		},
+	});
 
 	let rjson = await request.json();
 
 	if (rjson.error) {
-		throw new Error(rjson.error.message);
+		throw new Error(rjson.status + rjson.error.message);
 	}
 
-	return rjson.tracks.items[0];
+	if (rjson.tracks.items.length > 0) {
+		// console.log(rjson.tracks.items[0].name);
+		return rjson.tracks.items[0];
+	} else {
+		console.log("None found", songName);
+
+		return null;
+	}
 }
 
 async function getSpotifySongs(songs, auth_token) {
 	let spotifySongs = [];
 	for (let songName of songs) {
 		const spotifySong = await searchSong(songName, auth_token);
-
-		spotifySongs.push(spotifySong);
+		if (spotifySong) {
+			spotifySongs.push(spotifySong);
+		}
 	}
 
 	return spotifySongs;
@@ -132,7 +141,7 @@ async function main() {
 
 	let spotifySongs = await getSpotifySongs(songs, process.env.auth_token);
 
-	console.log(spotifySongs);
+	console.log("Spotify length: ", spotifySongs.length);
 }
 // like python's if __name__ == "__main__":
 if (require.main === module) {
