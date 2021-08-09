@@ -1,8 +1,9 @@
 require("dotenv").config();
-
+const fetch = require("node-fetch");
 const puppeteer = require("puppeteer");
 const cheerio = require("cheerio");
 const getPlaylist = require("./getPlaylist");
+const { response } = require("express");
 
 function extractItems() {
 	const extractedElements = document.querySelectorAll(
@@ -92,9 +93,50 @@ async function getSongs(playlistID) {
 	return songs;
 }
 
+async function searchSong(songName, auth_token) {
+	let request = await fetch(
+		"https://api.spotify.com/v1/search?q=" + songName + "&type=track",
+		{
+			method: "GET",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+				Authorization: "Bearer " + auth_token,
+			},
+		}
+	);
+
+	let rjson = await request.json();
+
+	if (rjson.error) {
+		throw new Error(rjson.error.message);
+	}
+
+	return rjson.tracks.items[0];
+}
+
+async function getSpotifySongs(songs, auth_token) {
+	let spotifySongs = [];
+	for (let songName of songs) {
+		const spotifySong = await searchSong(songName, auth_token);
+
+		spotifySongs.push(spotifySong);
+	}
+
+	return spotifySongs;
+}
+
+async function main() {
+	let songs = await getSongs(process.env.playlistID);
+	console.log("Songs: ", songs);
+
+	let spotifySongs = await getSpotifySongs(songs, process.env.auth_token);
+
+	console.log(spotifySongs);
+}
 // like python's if __name__ == "__main__":
 if (require.main === module) {
-	getSongs(process.env.playlistID);
+	main();
 }
 
 module.exports = { getSongs };
