@@ -3,7 +3,7 @@ const fetch = require("node-fetch");
 const puppeteer = require("puppeteer");
 const cheerio = require("cheerio");
 const getPlaylist = require("./getPlaylist");
-const { response } = require("express");
+const cliProgress = require("cli-progress");
 
 function extractItems() {
 	const extractedElements = document.querySelectorAll(
@@ -112,7 +112,7 @@ async function searchSong(songName, auth_token) {
 	let rjson = await request.json();
 
 	if (rjson.error) {
-		console.log("Erorr", rjson.error.status, rjson.error.message);
+		console.log("\nErorr", rjson.error.status, rjson.error.message);
 		return null;
 	}
 
@@ -120,20 +120,33 @@ async function searchSong(songName, auth_token) {
 		// console.log(rjson.tracks.items[0].name);
 		return rjson.tracks.items[0];
 	} else {
-		console.log("None spotify alternatives found: ", songName, noCred);
+		console.log("\nNone spotify alternatives found: ", songName, noCred);
 
 		return null;
 	}
 }
 
 async function getSpotifySongs(songs, auth_token) {
+	console.log("Converting...");
 	let spotifySongs = [];
-	for (let songName of songs) {
+
+	const bar = new cliProgress.SingleBar({}, cliProgress.Presets.legacy);
+
+	bar.start(songs.length, 0);
+
+	for (let i = 0; i < songs.length; i++) {
+		let songName = songs[i];
 		const spotifySong = await searchSong(songName, auth_token);
 		if (spotifySong) {
 			spotifySongs.push(spotifySong);
 		}
+
+		bar.update(i);
 	}
+
+	bar.update(songs.length);
+
+	bar.stop();
 
 	return spotifySongs;
 }
