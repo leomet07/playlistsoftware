@@ -94,9 +94,11 @@ async function getSongs(playlistID) {
 }
 
 async function searchSong(songName, auth_token) {
+	let noCred = songName.replace(/ *\([^)]*\) */g, "");
+
 	const url =
 		"https://api.spotify.com/v1/search?q=" +
-		encodeURI(songName) +
+		encodeURI(noCred) +
 		"&type=track";
 	let request = await fetch(url, {
 		method: "GET",
@@ -110,14 +112,15 @@ async function searchSong(songName, auth_token) {
 	let rjson = await request.json();
 
 	if (rjson.error) {
-		throw new Error(rjson.status + rjson.error.message);
+		console.log("Erorr", rjson.status + rjson.error.message);
+		return null;
 	}
 
 	if (rjson.tracks.items.length > 0) {
 		// console.log(rjson.tracks.items[0].name);
 		return rjson.tracks.items[0];
 	} else {
-		console.log("None found", songName);
+		console.log("None found", songName, noCred);
 
 		return null;
 	}
@@ -137,7 +140,7 @@ async function getSpotifySongs(songs, auth_token) {
 
 async function main() {
 	let songs = await getSongs(process.env.playlistID);
-	console.log("Songs: ", songs);
+	// console.log("Songs: ", songs);
 
 	let spotifySongs = await getSpotifySongs(songs, process.env.auth_token);
 
