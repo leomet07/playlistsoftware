@@ -20,6 +20,10 @@ async function scrapeInfiniteScrollItems(page, extractItems, itemTargetCount) {
 	let items = [];
 	try {
 		let previousHeight;
+		console.log("Scraping the songs from youtube music...");
+		const bar = new cliProgress.SingleBar({}, cliProgress.Presets.legacy);
+
+		bar.start(itemTargetCount, 0);
 		while (items.length < itemTargetCount) {
 			items = await page.evaluate(extractItems);
 
@@ -34,7 +38,13 @@ async function scrapeInfiniteScrollItems(page, extractItems, itemTargetCount) {
 				hidden: true,
 				timeout: 1000,
 			});
+
+			bar.update(items.length);
 		}
+
+		bar.update(items.length);
+
+		bar.stop();
 	} catch (e) {
 		console.log("Error: ", e);
 	}
@@ -127,7 +137,7 @@ async function searchSong(songName, auth_token) {
 }
 
 async function getSpotifySongs(songs, auth_token) {
-	console.log("Converting...");
+	console.log("Searching up song alternatives on spotify...");
 	let spotifySongs = [];
 
 	const bar = new cliProgress.SingleBar({}, cliProgress.Presets.legacy);
@@ -190,13 +200,16 @@ async function createBlankPlaylist(UID, auth_token) {
 
 async function songsToSpotifyPlaylist(songs, playlistID, auth_token) {
 	let toSend = [];
+	console.log("Adding found spotify songs to the new playlist...");
+	const bar = new cliProgress.SingleBar({}, cliProgress.Presets.legacy);
+
+	bar.start(songs.length, 0);
 	for (let i = 0; i < songs.length; i++) {
 		let song = songs[i];
-		console.log("song upload: ", song);
+
 		toSend.push(song.uri);
 
 		if (i % 100 == 0 || i == songs.length - 1) {
-			console.log(toSend);
 			let response = await fetch(
 				"https://api.spotify.com/v1/playlists/" +
 					playlistID +
@@ -214,17 +227,18 @@ async function songsToSpotifyPlaylist(songs, playlistID, auth_token) {
 
 			let rjson = await response.json();
 
-			console.log("added", rjson);
-
 			toSend = [];
+
+			bar.update(i);
 		}
+
+		bar.update(songs.length);
+
+		bar.stop();
 	}
 }
 
-async function main() {
-	const auth_token = process.env.auth_token;
-	const ytplaylistID = process.env.playlistID;
-
+async function convert(ytplaylistID, auth_token) {
 	let UID = await getUID(auth_token);
 	console.log("UID", UID);
 
@@ -241,7 +255,16 @@ async function main() {
 		playlist.id,
 		auth_token
 	);
+
 	console.log("Spotify length: ", spotifySongs.length);
+
+	return spotifySongs;
+}
+async function main() {
+	const auth_token = process.env.auth_token;
+	const ytplaylistID = process.env.playlistID;
+
+	let spotifySongs = await convert(ytplaylistID, auth_token);
 }
 // like python's if __name__ == "__main__":
 if (require.main === module) {
