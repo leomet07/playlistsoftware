@@ -195,6 +195,7 @@ async function createBlankPlaylist(UID, auth_token) {
 	);
 
 	const rjson = await response.json();
+	console.log("blank", rjson);
 	return rjson;
 }
 
@@ -271,4 +272,4 @@ if (require.main === module) {
 	main();
 }
 
-module.exports = { getSongs };
+module.exports = { getSongs, convert };

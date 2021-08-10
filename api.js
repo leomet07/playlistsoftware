@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const getSongs = require("./puppet").getSongs;
+const puppet = require("./puppet");
 router.get("/", async (req, res) => {
 	return res.json({ message: "Api" });
 });
@@ -26,8 +26,8 @@ router.post("/yttospotify", async (req, res) => {
 		if (!ytID) {
 			return res.json({ message: "No ytID provided." });
 		}
-
-		const songs = await getSongs(ytID);
+		console.log("Access token: ", access_token);
+		const songs = await puppet.convert(ytID, access_token);
 
 		return res.json({ body, songs });
 	} else {

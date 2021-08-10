@@ -40,8 +40,7 @@ document
 		localStorage.setItem("ytID", ytID);
 		console.log("ytID", ytID);
 
-		const params = new URLSearchParams({});
 		const url =
-			"https://accounts.spotify.com/authorize?client_id=3bf1f10449fb41198b83a7809159c608&redirect_uri=http://localhost:3000/&response_type=token";
+			"https://accounts.spotify.com/authorize?client_id=3bf1f10449fb41198b83a7809159c608&redirect_uri=http://localhost:3000/&scope=playlist-modify-public%20playlist-modify-private%20user-read-private&response_type=token";
 		window.location.replace(url);
 	});
