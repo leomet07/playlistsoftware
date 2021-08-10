@@ -151,12 +151,96 @@ async function getSpotifySongs(songs, auth_token) {
 	return spotifySongs;
 }
 
+async function getUID(auth_token) {
+	let response = await fetch("https://api.spotify.com/v1/me", {
+		method: "GET",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+			Authorization: "Bearer " + auth_token,
+		},
+	});
+
+	let rjson = await response.json();
+
+	return rjson.id;
+}
+
+async function createBlankPlaylist(UID, auth_token) {
+	let response = await fetch(
+		"https://api.spotify.com/v1/users/" + UID + "/playlists",
+		{
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+				Authorization: "Bearer " + auth_token,
+			},
+			body: JSON.stringify({
+				name: "New Playlist",
+				description: "New playlist description",
+				public: true,
+			}),
+		}
+	);
+
+	const rjson = await response.json();
+	return rjson;
+}
+
+async function songsToSpotifyPlaylist(songs, playlistID, auth_token) {
+	let toSend = [];
+	for (let i = 0; i < songs.length; i++) {
+		let song = songs[i];
+		console.log("song upload: ", song);
+		toSend.push(song.uri);
+
+		if (i % 100 == 0 || i == songs.length - 1) {
+			console.log(toSend);
+			let response = await fetch(
+				"https://api.spotify.com/v1/playlists/" +
+					playlistID +
+					"/tracks",
+				{
+					method: "POST",
+					headers: {
+						Accept: "application/json",
+						"Content-Type": "application/json",
+						Authorization: "Bearer " + auth_token,
+					},
+					body: JSON.stringify({ uris: toSend }),
+				}
+			);
+
+			let rjson = await response.json();
+
+			console.log("added", rjson);
+
+			toSend = [];
+		}
+	}
+}
+
 async function main() {
-	let songs = await getSongs(process.env.playlistID);
+	const auth_token = process.env.auth_token;
+	const ytplaylistID = process.env.playlistID;
+
+	let UID = await getUID(auth_token);
+	console.log("UID", UID);
+
+	let playlist = await createBlankPlaylist(UID, auth_token);
+	console.log("Created a blank playlist");
+
+	let songNames = await getSongs(ytplaylistID);
 	// console.log("Songs: ", songs);
 
-	let spotifySongs = await getSpotifySongs(songs, process.env.auth_token);
+	let spotifySongs = await getSpotifySongs(songNames, auth_token);
 
+	let done = await songsToSpotifyPlaylist(
+		spotifySongs,
+		playlist.id,
+		auth_token
+	);
 	console.log("Spotify length: ", spotifySongs.length);
 }
 // like python's if __name__ == "__main__":
