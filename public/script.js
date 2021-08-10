@@ -27,6 +27,9 @@ window.onload = async () => {
 		let rjson = await response.json();
 
 		console.log(rjson);
+
+		localStorage.clear();
+		document.getElementById("ytID").value = "";
 	}
 };
 

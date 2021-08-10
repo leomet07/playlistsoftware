@@ -259,7 +259,7 @@ async function convert(ytplaylistID, auth_token) {
 
 	console.log("Spotify length: ", spotifySongs.length);
 
-	return spotifySongs;
+	return { spotifySongs: spotifySongs, playlistID: playlist.id };
 }
 async function main() {
 	const auth_token = process.env.auth_token;

@@ -27,9 +27,13 @@ router.post("/yttospotify", async (req, res) => {
 			return res.json({ message: "No ytID provided." });
 		}
 		console.log("Access token: ", access_token);
-		const songs = await puppet.convert(ytID, access_token);
+		const back = await puppet.convert(ytID, access_token);
 
-		return res.json({ body, songs });
+		return res.json({
+			body: body,
+			songs: back.spotifySongs,
+			id: back.playlistID,
+		});
 	} else {
 		return res.json({ message: "No body provided" });
 	}
