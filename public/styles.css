@@ -1,0 +1,32 @@
+* {
+	margin: 0px;
+	padding: 0px;
+}
+
+body {
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+#main {
+	margin-top: 50px;
+	text-align: center;
+	padding: 15px;
+}
+
+#ytID {
+	border: 1px solid black;
+	width: 90%;
+	margin: 15px;
+	background-color: white;
+	font-size: 20px;
+	padding: 3px;
+}
+
+#submitbtn {
+	border: 1px solid black;
+	padding: 5px;
+	/* border-radius: 5px; */
+}
+
+#title {
+}

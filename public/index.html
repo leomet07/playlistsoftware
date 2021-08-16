@@ -4,15 +4,28 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+		<link rel="stylesheet" type="text/css" href="styles.css" />
 		<title>YT music</title>
 	</head>
 	<body>
-		<h1>YT music </h1>
-		<form id="loginwithspotify">
-			<input type="text" id="ytID" />
-			<input type="submit" value="Log in" />
-		</form>
+		<main id="main">
+			<h1 id="title">
+				Convert a YT music playlist to a spotify playlist
+			</h1>
+			<h2>
+				Upon submit, a playlist will be created under the logged in
+				account.
+			</h2>
+			<form id="loginwithspotify">
+				<input
+					type="text"
+					placeholder="Youtube playlist ID"
+					id="ytID"
+				/>
+				<br />
+				<input type="submit" id="submitbtn" value="Log in" />
+			</form>
+		</main>
 		<script src="script.js"></script>
 	</body>
 </html>
