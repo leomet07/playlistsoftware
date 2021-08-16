@@ -2,6 +2,7 @@ window.onload = async () => {
 	let currentlocation = window.location;
 	console.log("Window loaded", currentlocation);
 	const ytID = localStorage.getItem("ytID");
+	const outputsongs = document.getElementById("outputsongs");
 
 	document.getElementById("ytID").value = ytID;
 
@@ -13,23 +14,43 @@ window.onload = async () => {
 		let access_token = args.get("access_token");
 		console.log("We have an access token: ", access_token);
 
-		let response = await fetch("http://localhost:3000/api/yttospotify", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				access_token: access_token,
-				ytID: ytID,
-			}),
-		});
+		if (access_token && !ytID) {
+			window.location.replace(window.location.href.split("/")[0]);
+		}
 
-		let rjson = await response.json();
+		if (ytID) {
+			let response = await fetch(
+				"http://localhost:3000/api/yttospotify",
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						access_token: access_token,
+						ytID: ytID,
+					}),
+				}
+			);
 
-		console.log(rjson);
+			let rjson = await response.json();
 
-		localStorage.clear();
-		document.getElementById("ytID").value = "";
+			console.log(rjson);
+
+			localStorage.clear();
+			document.getElementById("ytID").value = "";
+
+			let songs = rjson.songs;
+
+			outputsongs.innerHTML = `<h3 class="subtitle">Your songs: </h3>`;
+			for (let i = 0; i < songs.length; i++) {
+				const song = songs[i];
+
+				console.log(song.name);
+
+				outputsongs.innerHTML += `<p>${song.name}</p>`;
+			}
+		}
 	}
 };
 
