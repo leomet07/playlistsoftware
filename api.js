@@ -1,5 +1,14 @@
 const router = require("express").Router();
 const puppet = require("./puppet");
+const fetch = require("node-fetch");
+var SpotifyWebApi = require("spotify-web-api-node");
+
+var spotifyApi = new SpotifyWebApi({
+	clientId: process.env.clientID,
+	clientSecret: process.env.clientSecret,
+	redirectUri: "http://localhost:3000/",
+});
+
 router.get("/", async (req, res) => {
 	return res.json({ message: "Api" });
 });
@@ -37,6 +46,16 @@ router.post("/yttospotify", async (req, res) => {
 	} else {
 		return res.json({ message: "No body provided" });
 	}
+});
+
+router.post("/getauth", async (req, res) => {
+	const code = req.body.code;
+
+	const back = await spotifyApi.authorizationCodeGrant(code);
+
+	console.log(back);
+
+	res.json({ access_token: back.body.access_token });
 });
 
 module.exports = { router };
